@@ -1,60 +1,73 @@
-import React, { useState } from 'react';
-import { Container, Form, Button, Alert } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+const Login = (props) => {
+    const [credentials, setCredentials] = useState({ email: "", password: "" })
+    let navigate = useNavigate();
 
-  const handleLogin = async () => {
-    try {
-      // Replace with actual login logic
-      if (username === 'user' && password === 'password') {
-        setError(null);
-        console.log('Login successful');
-      } else {
-        setError('Invalid username or password');
-      }
-    } catch (error) {
-      setError('Login failed');
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const response = await fetch("http://localhost:5000/api/auth/login", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: credentials.email, password: credentials.password })
+        });
+        const json = await response.json()
+        console.log(json);
+        if (json.success) {
+            // Save the authToken & redirect
+            localStorage.setItem('token', json.authToken);
+            props.showAlert("Logged-in Successfully", "success");
+            navigate("/dashboard");
+        }
+        else {
+            props.showAlert("Invalid credentials", "danger");
+        }
     }
-  };
 
-  return (
-    <Container className="d-flex align-items-center justify-content-center vh-100">
-      <div className="p-4 shadow-lg rounded" style={{ width: '100%', maxWidth: '400px' }}>
-        <h2 className="text-center mb-4" style={{color: 'teal', fontFamily: 'cursive'}}>Login</h2>
-        {error && <Alert variant="danger">{error}</Alert>}
-        <Form>
-          <Form.Group className="mb-3" controlId="formUsername">
-            <Form.Label>Username</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </Form.Group>
+    const onChange = (e) => {
+        setCredentials({ ...credentials, [e.target.name]: e.target.value });
+    };
 
-          <Form.Group className="mb-3" controlId="formPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </Form.Group>
+    return (
+        <div className="d-flex mt-2 d-flex justify-content-center" style={{ minHeight: '100vh' }}>
+            <div style={{ width: "100%", maxWidth: "400px" }}>
+                <h2 className='my-3 text-center' style={{ fontFamily: 'monospace', fontSize: "3em" }}>FaceRecs</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                        <label htmlFor="email" className="form-label">Email address</label>
+                        <input
+                            type="email"
+                            className="form-control"
+                            value={credentials.email}
+                            onChange={onChange}
+                            id="email"
+                            name="email"
+                            aria-describedby="emailHelp"
+                        />
+                        <div id="emailHelp" className="form-text">
+                            We'll never share your email with anyone else.
+                        </div>
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="password" className="form-label">Password</label>
+                        <input
+                            type="password"
+                            className="form-control"
+                            value={credentials.password}
+                            onChange={onChange}
+                            name="password"
+                            id="password"
+                        />
+                    </div>
+                    <button type="submit" className="btn btn-primary w-100">Login</button>
+                </form>
+            </div>
+        </div>
 
-          <Button variant="primary" onClick={handleLogin} className="w-100" style={{backgroundColor: 'teal'}}>Login</Button>
-          <div className="text-center mt-3">
-            New User? <Link to="/register" style={{ color: 'darkgreen', textDecoration: 'underline' }}>REGISTER</Link>
-          </div>
-        </Form>
-      </div>
-    </Container>
-  );
-};
+    )
+}
 
-export default Login;
+export default Login

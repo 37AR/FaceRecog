@@ -1,109 +1,125 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, ListGroup } from 'react-bootstrap';
-import axios from 'axios';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const Dashboard = () => {
-  const [userName, setUserName] = useState('User');
-  const [crowdCount, setCrowdCount] = useState(0);
-  const [groupAuthResult, setGroupAuthResult] = useState([]);
-  const [verificationResult, setVerificationResult] = useState(null); // State for verification result
-
-  // Example crowd count
-  useEffect(() => {
-    const count = Math.floor(Math.random() * 100);  // Replace with real API call
-    setCrowdCount(count);
-  }, []);
-
-  // Handle face capture
-  const handleCaptureFace = async () => {
-    try {
-      const response = await axios.post('http://localhost:5000/capture-face', { userName });
-      console.log(response.data.message);
-    } catch (error) {
-      console.error('Error capturing face data:', error);
-    }
+const Dashboard = (props) => {
+  const navigate = useNavigate();
+  const handleOptionClick = (message, page) => {
+    // alert(`${message} clicked!`);
+    props.showAlert(`${message}, clicked!`, "success");
+    navigate(`/${page}`);
   };
 
-  // Handle face verification
-  const handleVerifyFace = async () => {
-    try {
-      const response = await axios.post('http://localhost:5000/verify-face', {userName});
-      const { user_name, confidence } = response.data;
-      setVerificationResult(`Verified User: ${user_name} with confidence ${confidence.toFixed(2)}`);
-    } catch (error) {
-      console.error('Error verifying face:', error);
-      setVerificationResult("Verification failed.");
-    }
+  const handleSoloRegister = () => {
+    navigate('/solo-register');
   };
-
+  const handleSoloVerify = () => {
+    navigate('/solo-auth');
+  }
   return (
-    <Container className="py-4">
-      <h1
-        className="mb-4"
-        style={{
-          fontFamily: 'Kumbh Sans',
-          color: 'whitesmoke',
-          backgroundColor: 'teal',
-          display: 'inline-block',
-          padding: '8px 16px',
-          borderRadius: '4px',
-          fontWeight: 'bold',
-        }}
-      >
-        Dashboard
-      </h1>
+    <div style={styles.dashboardContainer}>
+      <div style={styles.container}>
+        <h1 style={{ ...styles.header, ...styles.dashboardHeader, fontFamily: 'monospace', textDecoration: 'underline' }}>
+          Dashboard
+        </h1>
 
-      <Row>
-        {/* Individual Face Recognition */}
-        <Col md={4} className="mb-3">
-          <Card className="shadow-sm equal-height">
-            <Card.Body>
-              <Card.Title>Individual Face Recognition</Card.Title>
-              <Card.Text>Authenticated User: {userName}</Card.Text>
-              <Button variant="primary" style={{ backgroundColor: 'teal' }} onClick={handleCaptureFace}>
-                Capture Face
-              </Button>
-              <Button variant="secondary" style={{ backgroundColor: 'gray', marginLeft: '10px' }} onClick={handleVerifyFace}>
-                Verify Face
-              </Button>
-              {verificationResult && <p>{verificationResult}</p>}
-            </Card.Body>
-          </Card>
-        </Col>
+        <div style={styles.cardContainer}>
+          <div
+            style={styles.card}
+          // onClick={() => handleOptionClick("Individual Authentication", 'solo-auth')}
+          >
+            <p style={{fontFamily: 'revert-layer'}}>INDIVIDUAL AUTHENTICATION</p>
+            <div style={styles.buttonContainer}>
+              <button onClick={handleSoloRegister} style={styles.button}>Register</button>
+              <button onClick={handleSoloVerify} style={styles.button}>Verify</button>
+            </div>
 
-        {/* Group Face Recognition */}
-        <Col md={4} className="mb-3">
-          <Card className="shadow-sm equal-height">
-            <Card.Body>
-              <Card.Title>Group Face Recognition</Card.Title>
-              <Card.Text>Status: {groupAuthResult.length > 0 ? 'Authenticated' : 'Not Authenticated'}</Card.Text>
-              <Button style={{ backgroundColor: 'teal' }} variant="primary" onClick={() => setGroupAuthResult(['Person 1', 'Person 2'])}>
-                Authenticate Group
-              </Button>
-              <ListGroup variant="flush" className="mt-3">
-                {groupAuthResult.map((person, index) => (
-                  <ListGroup.Item key={index}>{person}</ListGroup.Item>
-                ))}
-              </ListGroup>
-            </Card.Body>
-          </Card>
-        </Col>
-
-        {/* Crowd Analysis */}
-        <Col md={4} className="mb-3">
-          <Card className="shadow-sm equal-height">
-            <Card.Body>
-              <Card.Title>Crowd Analysis</Card.Title>
-              <Card.Text>Crowd Count: {crowdCount}</Card.Text>
-              <Button style={{ backgroundColor: 'teal' }} variant="primary" onClick={() => setCrowdCount(Math.floor(Math.random() * 100))}>
-                Update Count
-              </Button>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+          </div>
+          <div
+            style={styles.card}
+            onClick={() => handleOptionClick("Group Authentication", 'group-auth')}
+          >
+            Group Authentication
+          </div>
+          <div
+            style={styles.card}
+            onClick={() => handleOptionClick("Crowd Counting", 'crowd-count')}
+          >
+            Crowd Counting
+          </div>
+        </div>
+      </div>
+    </div>
   );
+};
+
+const styles = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    height: "100vh",
+    fontFamily: 'Serif Sans',
+  },
+  header: {
+    fontSize: "2.5rem",
+    marginBottom: "20px",
+    color: "#333",
+  },
+  cardContainer: {
+    display: "flex",
+    gap: "100px",
+    flexWrap: "wrap",
+    justifyContent: "center",
+  },
+  card: {
+    marginTop: "30px",
+    width: "350px",
+    height: "150px",
+    backgroundColor: "teal",
+    color: "white",
+    display: "flex",
+    flexDirection: "column",  // Ensure text and buttons stack vertically
+    justifyContent: "flex-start",  // Align content at the top
+    alignItems: "center",
+    fontSize: "1.2rem",
+    borderRadius: "8px",
+    cursor: "pointer",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+    transition: "transform 0.3s, box-shadow 0.3s",
+    padding: "20px",  // Adds padding inside the card for better spacing
+  },
+  dashboardContainer: {
+    marginTop: "20px",
+    marginBottom: "20px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    height: "100vh",
+    fontFamily: "sans-serif",
+  },
+  dashboardHeader: {
+    fontSize: "2.5rem",
+    marginBottom: "20px",
+    color: "#333",
+    textDecoration: "underline",
+  },
+  buttonContainer: {
+    justifyContent: 'space-between',
+    marginTop: '15px',  // Adds space between the text and the buttons
+    display: 'flex',
+    gap: '15px',  // Adjust the gap between the buttons
+    width: "100%",  // Ensure buttons stretch across the card if desired
+  },
+  button: {
+    padding: '10px 20px',
+    fontSize: '1rem',
+    backgroundColor: 'white',
+    color: 'teal',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s',
+  }
 };
 
 export default Dashboard;

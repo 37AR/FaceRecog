@@ -6,6 +6,10 @@ const FaceDataSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    label: {
+        type: String,
+        required: true
+    },
     faceEncoding: {
         type: [Number],
         required: true
@@ -13,10 +17,6 @@ const FaceDataSchema = new Schema({
     timestamp: {
         type: Date,
         default: Date.now
-    },
-    label: {
-        type: String,
-        required: true
     }
 });
 
