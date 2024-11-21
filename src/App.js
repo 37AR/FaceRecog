@@ -1,9 +1,5 @@
 import './App.css';
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route
-} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import About from './pages/About';
@@ -15,6 +11,8 @@ import Dashboard from './pages/Dashboard';
 import SoloRegister from './components/SoloRegister';
 import GroupAuth from './components/GroupAuth';
 import CrowdCount from './components/CrowdCount';
+import SoloVerify from './components/SoloVerify';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -38,10 +36,12 @@ function App() {
             <Route exact path="/about" element={<About />} />
             <Route exact path="/login" element={<Login showAlert={showAlert} />} />
             <Route exact path="/signup" element={<Signup showAlert={showAlert} />} />
-            <Route exact path="/dashboard" element={<Dashboard showAlert={showAlert} />} />
-            <Route exact path="/solo-register" element={<SoloRegister showAlert={showAlert} />} />
-            <Route exact path="/group-auth" element={<GroupAuth showAlert={showAlert} />} />
-            <Route exact path="/crowd-count" element={<CrowdCount showAlert={showAlert} />} />
+              <Route exact path="/dashboard" element={<ProtectedRoute showAlert={showAlert}> <Dashboard showAlert={showAlert} /> </ProtectedRoute>} />
+              <Route exact path="/solo-register" element={<ProtectedRoute showAlert={showAlert}><SoloRegister showAlert={showAlert} /> </ProtectedRoute>} />
+              <Route exact path="/solo-verify" element={<ProtectedRoute showAlert={showAlert}>  <SoloVerify showAlert={showAlert} /> </ProtectedRoute>} />
+              <Route exact path="/group-auth" element={<ProtectedRoute showAlert={showAlert}> <GroupAuth showAlert={showAlert} /> </ProtectedRoute>} />
+              <Route exact path="/crowd-count" element={<ProtectedRoute showAlert={showAlert}> <CrowdCount showAlert={showAlert} /> </ProtectedRoute>} />
+
           </Routes>
         </div>
       </Router>

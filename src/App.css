@@ -40,3 +40,20 @@
 .custom_btn{
   background-color: teal;
 }
+
+.button {
+  text-decoration: double;
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: white;
+  color: teal;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.button:hover {
+  background-color: teal;
+  color: white;
+}

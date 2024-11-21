@@ -77,71 +77,91 @@ const SoloRegister = () => {
       setErrorMessage("Please start the camera before registering");
       return;
     }
-
+  
     setErrorMessage(""); // Clear previous errors
-
-    const capturedFaceEncodings = [];  // Store face encodings
+  
+    const capturedFaceEncodings = []; // Store face encodings
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
     canvas.width = videoRef.current.videoWidth;
     canvas.height = videoRef.current.videoHeight;
-
+  
+    let attemptCount = 0; // Track the total number of attempts
     try {
-      for (let i = 0; i < numImages; i++) {
-        // Capture image from video stream
-        context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-        const imageData = canvas.toDataURL("image/jpeg"); // Base64-encoded image
-        // Send the captured image to the server to generate the face encoding
-        const response = await fetch("http://localhost:5001/api/face/generate-embeddings", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            frame: imageData,  // Send base64 image
-          }),
-        });
-
-        const result = await response.json();
-        if (result.faceDetected) {
-          capturedFaceEncodings.push(result.faceEncoding); // Store the generated encoding
-          setCapturedCount(i + 1);  // Update captured count
-          console.log(`Face encoding generated for image ${i + 1}`);
-        } else {
-          console.error(`Error: ${result.message}`);
-          setErrorMessage(result.message);
-          return;
+      // Continue capturing until the required number of images is reached
+      while (capturedFaceEncodings.length < numImages) {
+        try {
+          setErrorMessage(""); // Clear error message for each attempt
+          attemptCount++;
+  
+          // Capture image from video stream
+          context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+          const imageData = canvas.toDataURL("image/jpeg"); // Base64-encoded image
+  
+          // Send the captured image to the server to generate the face encoding
+          const response = await fetch("http://localhost:5001/api/face/generate-embeddings", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              frame: imageData, // Send base64 image
+            }),
+          });
+  
+          console.log(`Attempt ${attemptCount}: Sent frame to Python`);
+          const result = await response.json();
+  
+          if (result.faceDetected) {
+            // Add the detected face encoding
+            capturedFaceEncodings.push(result.faceEncoding);
+            setCapturedCount(capturedFaceEncodings.length); // Update the captured count
+            console.log(`Face encoding generated (${capturedFaceEncodings.length}/${numImages})`);
+          } else {
+            console.log(`No face detected in attempt ${attemptCount}. Retrying...`);
+            setErrorMessage("No face detected, continuing...");
+          }
+  
+          // Add a delay for better variance between captures
+          await new Promise((resolve) => setTimeout(resolve, 300));
+        } catch (error) {
+          console.error("Error while capturing face:", error);
+          setErrorMessage("Error capturing face. Retrying...");
         }
-
-        // Delay for better variance
-        await new Promise((resolve) => setTimeout(resolve, 300));
       }
-
+  
+      console.log("Required number of face images captured successfully.");
+  
+      // Calculate the average face encoding
+      const averageFaceEncoding = calculateAverageEmbedding(capturedFaceEncodings);
+  
       // Prepare the data to be sent to the backend
       const data = {
-        label: name,  // Name of the person
-        faceEncoding: capturedFaceEncodings,  // Array of face encodings
+        label: name, // Name of the person
+        faceEncoding: averageFaceEncoding, // Average face encoding
       };
-
+      console.log(data.faceEncoding);
+  
       // Ensure you are getting the token from localStorage
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
         setErrorMessage("Authentication token missing. Please log in.");
         return;
       }
-
+  
       // Send the data to the backend with the token in the headers
       const response = await fetch("http://localhost:5000/api/face/register-face", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "auth-token": token,  // Include the token in the request header
+          "auth-token": token, // Include the token in the request header
         },
-        body: JSON.stringify(data),  // Send face encodings and label
+        body: JSON.stringify(data), // Send face encodings and label
       });
-
+      console.log("Sent embedding to Backend");
+  
       if (response.ok) {
-        const result = await response.json();  // This will now work correctly
+        const result = await response.json();
         if (result.success) {
           alert(`${name} registered successfully!`);
         } else {
@@ -154,11 +174,26 @@ const SoloRegister = () => {
         console.error("Error from server:", errorText);
         setErrorMessage("Failed to register face. Please try again.");
       }
-
     } catch (error) {
       console.error("Error during face registration:", error);
       setErrorMessage("Failed to register face. Please try again.");
     }
+  };
+  
+  // Function to calculate the average of the face embeddings
+  const calculateAverageEmbedding = (embeddings) => {
+    const numDimensions = embeddings[0].length;  // Assuming all embeddings have the same length
+    const average = new Array(numDimensions).fill(0);  // Initialize an array of zeros
+
+    // Sum all embeddings for each dimension
+    embeddings.forEach(embedding => {
+      embedding.forEach((value, index) => {
+        average[index] += value;
+      });
+    });
+
+    // Calculate the average for each dimension
+    return average.map(sum => sum / embeddings.length);
   };
 
 
@@ -255,13 +290,14 @@ const SoloRegister = () => {
         </div>
       </div>
     </div>
-);
+  );
 
 };
 
 // Styles
 const styles = {
   container: {
+    fontFamily: 'Kumbh Sans',
     padding: "20px",
     maxWidth: "600px",
     margin: "0 auto",
@@ -326,16 +362,6 @@ const styles = {
     display: "flex",
     gap: "10px",  // Add space between buttons
     marginBottom: "15px",
-  },
-  button: {
-    padding: "10px 20px",
-    fontSize: "16px",
-    backgroundColor: "#4CAF50",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    transition: "background-color 0.3s",
   },
   button: {
     padding: "10px 20px",

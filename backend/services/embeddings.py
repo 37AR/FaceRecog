@@ -62,7 +62,7 @@ def generate_embedding():
         embedding = model.predict(face_preprocessed)[0]  # Assuming the model outputs a 1D embedding vector
 
         # Return embedding
-        return jsonify({"faceDetected": True, "embedding": embedding.tolist()}), 200
+        return jsonify({"faceDetected": True, "faceEncoding": embedding.tolist()}), 200
 
     except Exception as e:
         print("Error during embedding generation:", str(e))  # Log the error

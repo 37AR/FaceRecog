@@ -13,7 +13,7 @@ const Dashboard = (props) => {
     navigate('/solo-register');
   };
   const handleSoloVerify = () => {
-    navigate('/solo-auth');
+    navigate('/solo-verify');
   }
   return (
     <div style={styles.dashboardContainer}>
@@ -27,10 +27,10 @@ const Dashboard = (props) => {
             style={styles.card}
           // onClick={() => handleOptionClick("Individual Authentication", 'solo-auth')}
           >
-            <p style={{fontFamily: 'revert-layer'}}>INDIVIDUAL AUTHENTICATION</p>
+            <p style={{fontFamily: 'revert-layer'}}>Individual Authentication</p>
             <div style={styles.buttonContainer}>
-              <button onClick={handleSoloRegister} style={styles.button}>Register</button>
-              <button onClick={handleSoloVerify} style={styles.button}>Verify</button>
+              <button onClick={handleSoloRegister} style={styles.button}>REGISTER</button>
+              <button onClick={handleSoloVerify} style={styles.button}>VERIFY</button>
             </div>
 
           </div>
@@ -72,6 +72,7 @@ const styles = {
     justifyContent: "center",
   },
   card: {
+    fontFamily: 'Kumbh Sans',
     marginTop: "30px",
     width: "350px",
     height: "150px",
@@ -111,6 +112,7 @@ const styles = {
     width: "100%",  // Ensure buttons stretch across the card if desired
   },
   button: {
+    textDecoration: 'double',
     padding: '10px 20px',
     fontSize: '1rem',
     backgroundColor: 'white',
