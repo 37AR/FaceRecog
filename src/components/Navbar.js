@@ -47,7 +47,9 @@ const styles = {
     },
     title: {
         color: 'teal',
-        fontSize: '40px'
+        fontSize: '40px',
+        fontFamily: 'Bruno Ace SC',
+        borderBottom: "4px solid teal",
     }
 };
 

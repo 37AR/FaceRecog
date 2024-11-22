@@ -166,103 +166,135 @@ const SoloVerify = () => {
     <div style={styles.container}>
       <h1 style={styles.header}>Verify Face</h1>
 
-      {errorMessage && <div style={styles.errorMessage}>{errorMessage}</div>}
+      {/* Card container */}
+      <div style={styles.card}>
+        {/* Error Message */}
+        {errorMessage && <div style={styles.errorMessage}>{errorMessage}</div>}
 
-      <div style={styles.cameraContainer}>
-        {isCameraActive ? (
-          <video ref={videoRef} style={styles.video} autoPlay muted />
-        ) : (
-          <div style={styles.placeholder}>Camera is off</div>
+        {/* Camera View */}
+        <div style={styles.cameraContainer}>
+          {isCameraActive ? (
+            <video ref={videoRef} style={styles.video} autoPlay muted />
+          ) : (
+            <div style={styles.placeholder}>Camera is off</div>
+          )}
+        </div>
+
+        {/* Verification Result */}
+        {verificationResult && (
+          <div style={styles.resultMessage}>{verificationResult}</div>
         )}
+
+        {/* Buttons Section */}
+        <div style={styles.buttonsRow}>
+          <button
+            onClick={() => setIsCameraActive(true)}
+            style={styles.button}
+            disabled={isCameraActive}
+          >
+            Start Camera
+          </button>
+          <button
+            onClick={() => setIsCameraActive(false)}
+            style={{ ...styles.button, backgroundColor: '#d40707d8' }}
+            disabled={!isCameraActive}
+          >
+            Stop Camera
+          </button>
+          <button
+            onClick={handleVerifyFace}
+            style={{ ...styles.button, backgroundColor: 'teal' }}
+            disabled={!isCameraActive || isLoading}
+          >
+            {isLoading ? 'Verifying...' : 'Verify Face'}
+          </button>
+        </div>
       </div>
 
-      <div style={styles.buttonContainer}>
-        <button
-          onClick={() => setIsCameraActive(true)}
-          style={styles.button}
-          disabled={isCameraActive}
-        >
-          Start Camera
-        </button>
-        <button
-          onClick={() => setIsCameraActive(false)}
-          style={styles.button}
-          disabled={!isCameraActive}
-        >
-          Stop Camera
-        </button>
-        <button
-          onClick={handleVerifyFace}
-          style={styles.button}
-          disabled={!isCameraActive || isLoading}
-        >
-          {isLoading ? "Verifying..." : "Verify Face"}
-        </button>
-      </div>
 
-      {verificationResult && (
-        <div style={styles.resultMessage}>{verificationResult}</div>
-      )}
     </div>
   );
 };
-
 
 // Styles
 const styles = {
   container: {
     fontFamily: 'Kumbh Sans',
-    padding: "20px",
-    maxWidth: "600px",
-    margin: "0 auto",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    padding: '20px',
+    maxWidth: '600px',
+    margin: '0 auto',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   header: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    marginBottom: "20px",
+    fontSize: '24px',
+    fontWeight: 'bold',
+    marginBottom: '20px',
+    marginTop: '-50px',
+    color: '#2c3e50',
+  },
+  card: {
+    width: '100%',
+    backgroundColor: '#fff',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    borderRadius: '10px',
+    padding: '20px',
   },
   errorMessage: {
-    color: "red",
-    marginBottom: "15px",
-    fontSize: "14px",
-    fontWeight: "600",
+    color: 'red',
+    marginBottom: '15px',
+    fontSize: '14px',
+    fontWeight: '600',
+    textAlign: 'center',
   },
   cameraContainer: {
-    width: "100%",
-    height: "100%",
-    marginBottom: "20px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    border: "1px solid #ddd",
-    backgroundColor: "#f7f7f7",
+    width: '100%',
+    height: '400px',
+    marginBottom: '20px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    border: '1px solid #ddd',
+    backgroundColor: '#f7f7f7',
+    borderRadius: '8px',
   },
   placeholder: {
-    fontSize: "18px",
-    color: "#666",
+    fontSize: '18px',
+    color: '#666',
   },
   video: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    borderRadius: '8px',
   },
-  buttonContainer: {
-    display: "flex",
-    gap: "10px",
+  buttonsRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: '10px',
+    marginTop: '20px',
   },
   button: {
-    padding: "10px 20px",
-    fontSize: "16px",
-    backgroundColor: "#4CAF50",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    transition: "background-color 0.3s",
+    flex: '1', // Ensures buttons have equal width
+    padding: '10px 20px',
+    fontSize: '16px',
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s',
+    textAlign: 'center',
+  },
+  resultMessage: {
+    marginTop: '20px',
+    fontSize: '16px',
+    fontWeight: '500',
+    color: '#333',
+    textAlign: 'center',
   },
 };
+
 
 export default SoloVerify;

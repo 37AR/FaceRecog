@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
+// import backdropImage from '../images/facerecs.jpg';
 
 const Login = (props) => {
     const location = useLocation();
@@ -34,11 +35,13 @@ const Login = (props) => {
         setCredentials({ ...credentials, [e.target.name]: e.target.value });
     };
 
+    const isFormValid = credentials.email && credentials.password;
+
     return (
         <div style={styles.container}>
             <div className="container mt-1 d-flex justify-content-center" style={{ minHeight: '79vh' }}>
                 <div style={{ width: "100%", maxWidth: "400px" }}>
-                    <h2 className='my-3 text-center' style={styles.title}>FaceRecs</h2>
+                    <div className='my-3 text-center' style={styles.title}>FaceRecs</div>
                     {/* Login Message */}
                     {message && <p style={{ color: 'red', fontSize: '20px', justifyContent: 'center' }}>{message}</p>}
                     <Card className="p-5 shadow-lg" style={styles.card}>
@@ -69,7 +72,14 @@ const Login = (props) => {
                                     id="password"
                                 />
                             </div>
-                            <button type="submit" className="btn btn-primary w-100">Login</button>
+                            <button 
+                                type="submit"
+                                className="btn btn-primary"
+                                style={{ ...styles.button, backgroundColor: isFormValid ? '#007bff' : '#099acb' }}
+                                disabled={!isFormValid}
+                            >
+                                Login
+                            </button>
                         </form>
                     </Card>
                     <div className="text-center mt-3">
@@ -85,18 +95,40 @@ const Login = (props) => {
 const styles = {
     container: {
         fontFamily: 'Kumbh Sans',
+        // backgroundImage: `url(${backdropImage})`,
+        // backgroundSize: 'cover',
+        // backgroundPosition: 'center',
+        // backgroundRepeat: 'no-repeat',
+        // minHeight: '100vh',
     },
     title: {
-        fontFamily: 'Lexend',
-        fontSize: '60px',
+        color: 'teal',
+        fontSize: '65px',
+        fontFamily: 'Bruno Ace SC',
+        borderBottom: "4px solid teal",  // adjusted border width
+        paddingBottom: '5px',  // refined padding for border-bottom effect
     },
     card: {
+        transform: 'scale(1.03)',  // slightly increases size
         maxWidth: '100%',
-        minHeight: '200px',
-        padding: '20px',
-        borderRadius: '8px',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',  // softer shadow
-    }
+        minHeight: '250px',
+        padding: '25px',
+        borderRadius: '10px',  // added more rounding to the card corners
+        boxShadow: '0 4px 10px rgba(0,0,0,0.1)',  // softened shadow
+        transition: 'transform 0.3s ease-in-out',  // smooth transition for scaling
+    },
+    button: {
+        width: '100%',
+        padding: '10px',
+        fontSize: '16px',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        textAlign: 'center',
+    },
 };
+
+// Hover effect for the card
+
 
 export default Login;
