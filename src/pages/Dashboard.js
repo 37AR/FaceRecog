@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import soloImage from '../images/solo.jpg';
 import groupImage from '../images/y_group.jpg';
@@ -6,6 +6,15 @@ import crowdImage from '../images/crowd.webp';
 
 const Dashboard = (props) => {
   const navigate = useNavigate();
+  const [hoveredCard, setHoveredCard] = useState(null);
+
+  const handleMouseEnter = (card) => {
+    setHoveredCard(card);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredCard(null);
+  };
   const handleOptionClick = (message, page) => {
     // alert(`${message} clicked!`);
     props.showAlert(`${message}, clicked!`, "success");
@@ -49,8 +58,9 @@ const Dashboard = (props) => {
 
         <div style={styles.cardContainer}>
           <div
-            style={{ ...styles.card, backgroundImage: `url(${soloImage})` }}
-          // onClick={() => handleOptionClick("Individual Authentication", 'solo-auth')}
+            style={{ ...styles.card, ...(hoveredCard === "solo" ? styles.cardHover : {}), backgroundImage: `url(${soloImage})` }}
+            onMouseEnter={() => handleMouseEnter("solo")}
+            onMouseLeave={handleMouseLeave}
           >
             <p style={styles.cardTitle}>Individual Authentication</p>
             <div style={styles.buttonContainer}>
@@ -59,8 +69,9 @@ const Dashboard = (props) => {
             </div>
           </div>
           <div
-            style={{ ...styles.card, backgroundImage: `url(${groupImage})` }}
-            onClick={() => handleOptionClick("Group Authentication", "group-auth")}
+            style={{ ...styles.card, ...(hoveredCard === "group" ? styles.cardHover : {}), backgroundImage: `url(${groupImage})` }}
+            onMouseEnter={() => handleMouseEnter("group")}
+            onMouseLeave={handleMouseLeave}
           >
             <p style={styles.cardTitle}>Group Authentication</p>
             <div style={styles.buttonContainer}>
@@ -70,7 +81,9 @@ const Dashboard = (props) => {
             </div>
           </div>
           <div
-            style={{ ...styles.card, backgroundImage: `url(${crowdImage})` }}
+            style={{ ...styles.card, ...(hoveredCard === "crowd" ? styles.cardHover : {}), backgroundImage: `url(${crowdImage})` }}
+            onMouseEnter={() => handleMouseEnter("crowd")}
+            onMouseLeave={handleMouseLeave}
             onClick={() => handleOptionClick("Crowd Counting", "crowd-count")}
           >
             <p style={styles.cardTitle}>Crowd Counting</p>
@@ -91,9 +104,10 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    height: "100vh",
+    height: "100%", //100vh
     width: "100%",
     padding: "20px",
+    marginTop: "35px",
     boxSizing: "border-box",
   },
   header: {
@@ -128,6 +142,12 @@ const styles = {
     padding: "20px",
     position: "relative",
     textAlign: "center",
+    transition: "transform 0.3s, box-shadow 0.3s", // Add smooth transition for hover effect
+    cursor: "pointer",
+  },
+  cardHover: {
+    transform: "scale(1.05)", // Slight scaling
+    boxShadow: "0 6px 12px rgba(0, 0, 0, 0.4)", // Enhanced shadow
   },
   cardTitle: {
     fontWeight: "bold",
@@ -137,7 +157,7 @@ const styles = {
   },
   buttonContainer: {
     display: "flex",
-    gap: "10px",
+    gap: "35px",
     marginTop: "10px",
     flexWrap: "wrap",
   },

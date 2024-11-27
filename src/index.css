@@ -23,3 +23,12 @@ code {
 }
 
 
+.custom-input::placeholder {
+  font-weight: bold;
+  color: #aaa;
+}
+
+
+
+
+

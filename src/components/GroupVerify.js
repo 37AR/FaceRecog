@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 
-const SoloVerify = () => {
+const GroupVerify = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -66,8 +66,8 @@ const SoloVerify = () => {
   // Verify Face
   const handleVerifyFace = async () => {
     if (!isCameraActive) {
-      setErrorMessage("Please start the camera before verifying.");
-      return;
+        setErrorMessage("Please start the camera before verifying.");
+        return;
     }
 
     setErrorMessage("");
@@ -79,76 +79,56 @@ const SoloVerify = () => {
     canvas.height = videoRef.current.videoHeight;
 
     try {
-      // Capture image from video stream
-      context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-      const imageData = canvas.toDataURL("image/jpeg");
-      console.log('Image Captured for Verification!');
+        // Capture image from video stream
+        context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        const imageData = canvas.toDataURL("image/jpeg");
+        console.log('Image Captured for Verification!');
 
-
-      // Generate embeddings
-      const embeddingResponse = await fetch(
-        "http://localhost:5001/api/face/generate-embeddings",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            frame: imageData,
-          }),
+        // Send image to backend for verification
+        const token = sessionStorage.getItem("token");
+        if (!token) {
+            setErrorMessage("Authentication token missing. Please log in.");
+            setTimeout(() => {
+                window.location.href = "/login";
+            }, 2000);
+            setIsLoading(false);
+            return;
         }
-      );
 
-      const embeddingResult = await embeddingResponse.json();
-      if (!embeddingResponse.ok || !embeddingResult.faceDetected) {
-        console.error("Error in embedding generation:", embeddingResult.message);
-        setErrorMessage(embeddingResult.message || "Failed to generate embeddings.");
-        setIsLoading(false);
-        return;
-      }
+        const verificationResponse = await fetch(
+            "http://localhost:5001/api/face/verify-multiple-faces",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "auth-token": token,
+                },
+                body: JSON.stringify({
+                    frame: imageData,
+                }),
+            }
+        );
 
-      console.log('Embeddings generated for Verification Image!');
-      const faceEmbedding = embeddingResult.faceEncoding;
+        const verificationResultData = await verificationResponse.json();
 
-      // Verify embedding with backend
-      const token = sessionStorage.getItem("token");
-      if (!token) {
-        setErrorMessage("Authentication token missing. Please log in.");
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 2000);
-        setIsLoading(false);
-        return;
-      }
-
-      const verificationResponse = await fetch(
-        "http://localhost:5000/api/face/verify-face",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "auth-token": token,
-          },
-          body: JSON.stringify({
-            embedding: faceEmbedding,
-          }),
+        if (verificationResponse.ok && verificationResultData.faces) {
+            const results = verificationResultData.faces.map(face => 
+                face.name 
+                    ? `Person identified: ${face.name}` 
+                    : "Unknown person"
+            ).join("\n");
+            setVerificationResult(results);
+        } else {
+            setVerificationResult("No faces identified.");
         }
-      );
-
-      const verificationResultData = await verificationResponse.json();
-
-      if (verificationResponse.ok && verificationResultData.name) {
-        setVerificationResult(`Person identified: ${verificationResultData.name}`);
-      } else {
-        setVerificationResult("Unknown person.");
-      }
     } catch (error) {
-      console.error("Error during face verification:", error);
-      setErrorMessage("Failed to verify face. Please try again.");
+        console.error("Error during face verification:", error);
+        setErrorMessage("Failed to verify face. Please try again.");
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
+
 
   // Manage Camera Lifecycle
   useEffect(() => {
@@ -297,4 +277,4 @@ const styles = {
 };
 
 
-export default SoloVerify;
+export default GroupVerify;

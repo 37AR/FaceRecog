@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 
-const SoloRegister = () => {
+const SoloRegister = (props) => {
   const [name, setName] = useState("");
   const [numImages, setNumImages] = useState(15); // Default: 15 images
   const [errorMessage, setErrorMessage] = useState("");
@@ -142,8 +142,8 @@ const SoloRegister = () => {
       };
       console.log(data.faceEncoding);
 
-      // Ensure you are getting the token from localStorage
-      const token = localStorage.getItem("token");
+      // Ensure you are getting the token from sessionStorage
+      const token = sessionStorage.getItem("token");
       if (!token) {
         setErrorMessage("Authentication token missing. Please log in.");
         return;
@@ -163,7 +163,7 @@ const SoloRegister = () => {
       if (response.ok) {
         const result = await response.json();
         if (result.success) {
-          alert(`${name} registered successfully!`);
+          props.showAlert(`${name} registered successfully!`, 'info');
         } else {
           console.error(result.message);
           setErrorMessage(result.message);

@@ -111,4 +111,30 @@ router.post('/verify-face', fetchuser, async (req, res) => {
 
 
 
+// ROUTE 3: Delete a face label from profile: DELETE "/api/face/delete-labels/:label". Login required
+router.delete('/delete-labels/:label', fetchuser, async (req, res) => {
+    try {
+        const label = req.params.label;
+        console.log('DELETE request received for label:', label);
+
+        if (!label) {
+            return res.status(400).json({ error: 'Label parameter is required' });
+        }
+
+        const result = await FaceData.deleteOne({ user: req.user.id, label });
+        console.log('Delete operation result:', result);
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ error: 'Label not found or already deleted' });
+        }
+
+        res.json({ message: 'Label removed successfully' });
+    } catch (error) {
+        console.error('Error deleting label:', error.message);
+        res.status(500).json({ error: 'An internal server error occurred while deleting the label' });
+    }
+});
+
+
+
 module.exports = router;

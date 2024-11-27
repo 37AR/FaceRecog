@@ -6,7 +6,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
       navigate('/dashboard'); // Navigate to the dashboard if the token exists
     } else {

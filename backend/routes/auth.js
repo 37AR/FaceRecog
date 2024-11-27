@@ -5,6 +5,7 @@ const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const fetchuser = require('../middleware/fetchuser');
+const FaceData = require('../models/FaceData');
 
 const JWT_SECRET = "Iam$Batman";
 
@@ -99,16 +100,48 @@ router.post('/login', [
 });
 
 
-// ROUTE 3: Get logged in User details using: POST "/api/auth/getuser". Login required
-router.post('/getuser',fetchuser, async (req, res) => {
+// ROUTE 3: Get User Profile using: GET "/api/auth/profile". Login required
+router.get('/profile', fetchuser, async (req, res) => {
     try {
-        const userId = req.user.id;
-        const user = await User.findById(userId).select("-password")
-        res.send(user)
+        const user = await User.findById(req.user.id).select('-password'); // Avoid returning sensitive info
+        const faceData = await FaceData.find({ user: req.user.id }).select('label -_id');
+        const labels = faceData.map((data) => data.label);
+
+        res.json({ user, labels });
     } catch (error) {
-        console.error(error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({ error: 'Error fetching profile data' });
     }
 });
+
+
+// ROUTE 4: Update user's name from profile: PUT "/api/auth/profile/update-name". Login required
+
+router.put('/profile/update-name', fetchuser, async (req, res) => {
+    try {
+        const userId = req.user.id; // `auth` middleware should add `user` to req
+        const { name } = req.body;
+
+        if (!name || name.trim() === '') {
+            return res.status(400).json({ error: 'Name cannot be empty.' });
+        }
+
+        // Find user and update the name
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { name },
+            { new: true, runValidators: true } // Return the updated document
+        );
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        res.status(200).json({ message: 'Name updated successfully.', user });
+    } catch (error) {
+        console.error('Error updating name:', error.message);
+        res.status(500).json({ error: 'Server error. Please try again later.' });
+    }
+});
+
 
 module.exports = router;

@@ -9,10 +9,12 @@ import Signup from './pages/Signup';
 import { useState } from 'react';
 import Dashboard from './pages/Dashboard';
 import SoloRegister from './components/SoloRegister';
-import GroupAuth from './components/GroupAuth';
+import GroupVerify from './components/GroupVerify';
 import CrowdCount from './components/CrowdCount';
 import SoloVerify from './components/SoloVerify';
 import ProtectedRoute from './components/ProtectedRoute';
+import UserProfile from './components/UserProfile';
+
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -32,7 +34,6 @@ function App() {
     <>
       {/* Conditionally render Navbar based on current path */}
       {(location.pathname !== '/login' && location.pathname !== '/signup') && <Navbar />}
-
       <Alert alert={alert} />
       <div className='container'>
         <Routes>
@@ -41,9 +42,11 @@ function App() {
           <Route exact path="/login" element={<Login showAlert={showAlert} />} />
           <Route exact path="/signup" element={<Signup showAlert={showAlert} />} />
           <Route exact path="/dashboard" element={<ProtectedRoute showAlert={showAlert}> <Dashboard showAlert={showAlert} /> </ProtectedRoute>} />
+          <Route exact path="/profile" element={<ProtectedRoute showAlert={showAlert}> <UserProfile showAlert={showAlert} /> </ProtectedRoute>} />
+
           <Route exact path="/solo-register" element={<ProtectedRoute showAlert={showAlert}><SoloRegister showAlert={showAlert} /> </ProtectedRoute>} />
           <Route exact path="/solo-verify" element={<ProtectedRoute showAlert={showAlert}>  <SoloVerify showAlert={showAlert} /> </ProtectedRoute>} />
-          <Route exact path="/group-auth" element={<ProtectedRoute showAlert={showAlert}> <GroupAuth showAlert={showAlert} /> </ProtectedRoute>} />
+          <Route exact path="/group-verify" element={<ProtectedRoute showAlert={showAlert}> <GroupVerify showAlert={showAlert} /> </ProtectedRoute>} />
           <Route exact path="/crowd-count" element={<ProtectedRoute showAlert={showAlert}> <CrowdCount showAlert={showAlert} /> </ProtectedRoute>} />
         </Routes>
       </div>
