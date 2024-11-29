@@ -6,9 +6,14 @@ import io
 from PIL import Image
 import cv2
 from flask_cors import CORS  # Correct import for CORS
+from keras_facenet import FaceNet
 
-app = Flask(__name__)  # Corrected to __name__
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})  # Allow CORS from localhost:3000
+app = Flask(__name__)
+CORS(app, resources={
+    r"/api/*": {
+        "origins": "http://localhost:3000"  # Allow requests from your frontend
+    }
+})
 
 
 # Load your custom model
@@ -67,6 +72,55 @@ def generate_embedding():
     except Exception as e:
         print("Error during embedding generation:", str(e))  # Log the error
         return jsonify({"error": "An error occurred while processing the frame", "details": str(e)}), 500
+
+
+
+# Initialize FaceNet pretrained
+embedder = FaceNet()
+
+
+@app.route('/api/face/generate-embeddings-ptm', methods=['POST'])
+def generate_embedding_ptm():
+    try:
+        data = request.get_json()
+        print("Received data for PTM!")  # Log the received data
+
+        frame_data = data.get("frame")
+        if not frame_data:
+            return jsonify({"error": "No frame data received"}), 400
+
+        # Decode the base64 frame
+        img_bytes = base64.b64decode(frame_data.split(",")[1])  # Strip base64 header
+        img = Image.open(io.BytesIO(img_bytes))
+        frame = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+
+        # Detect faces using Haar cascades
+        face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        faces = face_cascade.detectMultiScale(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), 1.3, 5)
+
+        if len(faces) == 0:
+            # No face detected
+            return jsonify({"faceDetected": False, "message": "No face detected"}), 200
+
+        # Process the first detected face (adjust if you want to handle multiple faces)
+        (x, y, w, h) = faces[0]
+        face = frame[y:y+h, x:x+w]
+
+        # Preprocess the face for FaceNet (FaceNet expects RGB images, not grayscale)
+        face_resized = cv2.resize(face, (160, 160))  # FaceNet expects 160x160 images
+        face_rgb = cv2.cvtColor(face_resized, cv2.COLOR_BGR2RGB)  # Convert to RGB
+        face_array = np.expand_dims(face_rgb, axis=0)  # Add batch dimension (1, 160, 160, 3)
+
+        # Generate embedding using FaceNet
+        embedding = embedder.embeddings(face_array)[0]  # Get the embedding for the first face
+
+        # Return the embedding
+        return jsonify({"faceDetected": True, "faceEncoding": embedding.tolist()}), 200
+
+    except Exception as e:
+        print("Error during PTM embedding generation:", str(e))  # Log the error
+        return jsonify({"error": "An error occurred while processing the frame", "details": str(e)}), 500
+
 
 
 if __name__ == '__main__':  # Corrected __name__ check

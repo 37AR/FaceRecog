@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from './CSS_SoloRegister';
 
-const SoloRegister = (props) => {
+const Ptm_SoloRegister = (props) => {
   const [name, setName] = useState("");
   const [numImages, setNumImages] = useState(15); // Default: 15 images
   const [errorMessage, setErrorMessage] = useState("");
@@ -100,7 +100,7 @@ const SoloRegister = (props) => {
           const imageData = canvas.toDataURL("image/jpeg"); // Base64-encoded image
 
           // Send the captured image to the server to generate the face encoding
-          const response = await fetch("http://localhost:5001/api/face/generate-embeddings", {
+          const response = await fetch("http://localhost:5001/api/face/generate-embeddings-ptm", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -136,12 +136,11 @@ const SoloRegister = (props) => {
       // Calculate the average face encoding
       const averageFaceEncoding = calculateAverageEmbedding(capturedFaceEncodings);
 
-      // Prepare the data to be sent to the backend
       const data = {
-        label: name, // Name of the person
-        faceEncoding: averageFaceEncoding, // Average face encoding
+        label: name,
+        faceEncoding: averageFaceEncoding,
       };
-      console.log(data.faceEncoding);
+      // console.log(data.faceEncoding);
 
       // Ensure you are getting the token from sessionStorage
       const token = sessionStorage.getItem("token");
@@ -151,7 +150,7 @@ const SoloRegister = (props) => {
       }
 
       // Send the data to the backend with the token in the headers
-      const response = await fetch("http://localhost:5000/api/face/register-face", {
+      const response = await fetch("http://localhost:5000/api/face/register-face-ptm", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -296,4 +295,4 @@ const SoloRegister = (props) => {
 };
 
 
-export default SoloRegister;
+export default Ptm_SoloRegister;

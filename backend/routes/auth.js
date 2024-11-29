@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const fetchuser = require('../middleware/fetchuser');
 const FaceData = require('../models/FaceData');
+const PTM_FaceData = require('../models/PTM_FaceData');
 
 const JWT_SECRET = "Iam$Batman";
 
@@ -106,8 +107,10 @@ router.get('/profile', fetchuser, async (req, res) => {
         const user = await User.findById(req.user.id).select('-password'); // Avoid returning sensitive info
         const faceData = await FaceData.find({ user: req.user.id }).select('label -_id');
         const labels = faceData.map((data) => data.label);
+        const PTM_faceData = await PTM_FaceData.find({ user: req.user.id }).select('label -_id');
+        const plabels = PTM_faceData.map((data) => data.label);
 
-        res.json({ user, labels });
+        res.json({ user, labels, plabels });
     } catch (error) {
         res.status(500).json({ error: 'Error fetching profile data' });
     }

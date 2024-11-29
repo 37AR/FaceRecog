@@ -9,11 +9,13 @@ import Signup from './pages/Signup';
 import { useState } from 'react';
 import Dashboard from './pages/Dashboard';
 import SoloRegister from './components/SoloRegister';
+import PtmSoloRegister from './components/Ptm_SoloRegister';
 import GroupVerify from './components/GroupVerify';
 import CrowdCount from './components/CrowdCount';
 import SoloVerify from './components/SoloVerify';
 import ProtectedRoute from './components/ProtectedRoute';
 import UserProfile from './components/UserProfile';
+import ModelSelection from './components/ModelSelection';
 
 
 function App() {
@@ -43,8 +45,10 @@ function App() {
           <Route exact path="/signup" element={<Signup showAlert={showAlert} />} />
           <Route exact path="/dashboard" element={<ProtectedRoute showAlert={showAlert}> <Dashboard showAlert={showAlert} /> </ProtectedRoute>} />
           <Route exact path="/profile" element={<ProtectedRoute showAlert={showAlert}> <UserProfile showAlert={showAlert} /> </ProtectedRoute>} />
+          <Route path="/model-selection" element={<ProtectedRoute showAlert={showAlert}><ModelSelection showAlert={showAlert} /> </ProtectedRoute>} />
 
           <Route exact path="/solo-register" element={<ProtectedRoute showAlert={showAlert}><SoloRegister showAlert={showAlert} /> </ProtectedRoute>} />
+          <Route exact path="/solo-register-ptm" element={<ProtectedRoute showAlert={showAlert}><PtmSoloRegister showAlert={showAlert} /> </ProtectedRoute>} />
           <Route exact path="/solo-verify" element={<ProtectedRoute showAlert={showAlert}>  <SoloVerify showAlert={showAlert} /> </ProtectedRoute>} />
           <Route exact path="/group-verify" element={<ProtectedRoute showAlert={showAlert}> <GroupVerify showAlert={showAlert} /> </ProtectedRoute>} />
           <Route exact path="/crowd-count" element={<ProtectedRoute showAlert={showAlert}> <CrowdCount showAlert={showAlert} /> </ProtectedRoute>} />

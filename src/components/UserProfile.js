@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import styles from './CSSUserProfile';
+import styles from './CSS_UserProfile';
 
 const UserProfile = () => {
     const [userData, setUserData] = useState(null);
     const [labels, setLabels] = useState([]);
+    const [plabels, setPLabels] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editMode, setEditMode] = useState(false);
     const [updatedName, setUpdatedName] = useState('');
     const [showEditIcon, setShowEditIcon] = useState(false);
     const [showLabels, setShowLabels] = useState(false); // State to toggle labels visibility
+    const [showPLabels, setShowPLabels] = useState(false);
 
     const navigate = useNavigate();
 
@@ -32,6 +34,7 @@ const UserProfile = () => {
                 setUserData(response.data.user);
                 setUpdatedName(response.data.user.name);
                 setLabels(response.data.labels);
+                setPLabels(response.data.plabels);
             } catch (error) {
                 console.error('Error fetching user data:', error);
             } finally {
@@ -61,22 +64,30 @@ const UserProfile = () => {
         }
     };
 
-    const handleDeleteLabel = async (label) => {
+    const handleDeleteLabel = async (label, modelType) => {
         try {
             const token = sessionStorage.getItem('token');
-            const url = `http://localhost:5000/api/face/delete-labels/${label}`;
-
+            const url = `http://localhost:5000/api/face/delete-labels/${label}?model-type=${modelType}`;
+    
             await axios.delete(url, {
                 headers: {
                     'auth-token': token,
                 },
             });
-
-            setLabels(labels.filter((item) => item !== label));
+    
+            // Update the labels state after deletion
+            if (modelType === 'CNN') {
+                setLabels(labels.filter((item) => item !== label));
+            } else if (modelType === 'PTM') {
+                setPLabels(plabels.filter((item) => item !== label));
+            }
+            console.log(`${label} Label Deletion Successful [${modelType}]!`);
+    
         } catch (error) {
             console.error('Error deleting label:', error);
         }
     };
+    
 
     const getInitials = (name) => {
         return name
@@ -141,14 +152,14 @@ const UserProfile = () => {
                         </div>
                         <button
                             style={styles.addLabelButton}
-                            onClick={() => navigate('/solo-register')}
+                            onClick={() => navigate('/model-selection')}
                         >
                             Add Label
                         </button>
                     </div>
-
+                    {/* For CNN model Face Labels */}
                     <h4 style={styles.labelsHeader}>
-                        Your Registered Face Labels
+                        Registered Face Labels [CNN]
                         <button
                             style={styles.arrowButton}
                             onClick={() => setShowLabels(!showLabels)}
@@ -168,7 +179,7 @@ const UserProfile = () => {
                                         <span style={styles.labelText}>{label}</span>
                                         <button
                                             style={styles.deleteButton}
-                                            onClick={() => handleDeleteLabel(label)}
+                                            onClick={() => handleDeleteLabel(label, 'CNN')}
                                         >
                                             Remove
                                         </button>
@@ -176,6 +187,39 @@ const UserProfile = () => {
                                 ))
                             ) : (
                                 <p style={styles.noLabels}>No labels registered yet.</p>
+                            )}
+                        </ul>
+                    )}
+
+                    {/* For Pre-Trained mOdel Face Labels */}
+                    <h4 style={styles.labelsHeader}>
+                        Registered Face Labels [PTM]
+                        <button
+                            style={styles.arrowButton}
+                            onClick={() => setShowPLabels(!showPLabels)}
+                        >
+                            {showPLabels ? '▲' : '▼'}
+                        </button>
+                    </h4>
+                    {showPLabels && (
+                        <ul style={styles.labelList}>
+                            {plabels.length > 0 ? (
+                                plabels.map((label, index) => (
+                                    <li
+                                        key={index}
+                                        style={{ ...styles.labelItem, ...styles.labelItemRow }}
+                                    >
+                                        <span style={styles.labelText}>{label}</span>
+                                        <button
+                                            style={styles.deleteButton}
+                                            onClick={() => handleDeleteLabel(label, 'PTM')}
+                                        >
+                                            Remove
+                                        </button>
+                                    </li>
+                                ))
+                            ) : (
+                                <p style={styles.noLabels}>No PTM labels registered yet.</p>
                             )}
                         </ul>
                     )}
