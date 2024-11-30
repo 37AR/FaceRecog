@@ -16,6 +16,7 @@ import SoloVerify from './components/SoloVerify';
 import ProtectedRoute from './components/ProtectedRoute';
 import UserProfile from './components/UserProfile';
 import ModelSelection from './components/ModelSelection';
+import PtmSoloVerify from './components/Ptm_SoloVerify';
 
 
 function App() {
@@ -39,18 +40,31 @@ function App() {
       <Alert alert={alert} />
       <div className='container'>
         <Routes>
+          {/* Home */}
           <Route exact path="/" element={<Home showAlert={showAlert} />} />
+          {/* About */}
           <Route exact path="/about" element={<About />} />
+          {/* Login */}
           <Route exact path="/login" element={<Login showAlert={showAlert} />} />
+          {/* Signup */}
           <Route exact path="/signup" element={<Signup showAlert={showAlert} />} />
+          {/* Dashboard */}
           <Route exact path="/dashboard" element={<ProtectedRoute showAlert={showAlert}> <Dashboard showAlert={showAlert} /> </ProtectedRoute>} />
+          {/* User Profile */}
           <Route exact path="/profile" element={<ProtectedRoute showAlert={showAlert}> <UserProfile showAlert={showAlert} /> </ProtectedRoute>} />
-          <Route path="/model-selection" element={<ProtectedRoute showAlert={showAlert}><ModelSelection showAlert={showAlert} /> </ProtectedRoute>} />
-
+          {/* Model Selection */}
+          <Route path="/model-selection/:context" element={<ProtectedRoute showAlert={showAlert}><ModelSelection showAlert={showAlert} /> </ProtectedRoute>} />
+          {/* CNN Solo Registration */}
           <Route exact path="/solo-register" element={<ProtectedRoute showAlert={showAlert}><SoloRegister showAlert={showAlert} /> </ProtectedRoute>} />
+          {/* PTM Solo Registration */}
           <Route exact path="/solo-register-ptm" element={<ProtectedRoute showAlert={showAlert}><PtmSoloRegister showAlert={showAlert} /> </ProtectedRoute>} />
+          {/* CNN Solo Verification */}
           <Route exact path="/solo-verify" element={<ProtectedRoute showAlert={showAlert}>  <SoloVerify showAlert={showAlert} /> </ProtectedRoute>} />
+          {/* PTM Solo Verification */}
+          <Route exact path="/solo-verify-ptm" element={<ProtectedRoute showAlert={showAlert}>  <PtmSoloVerify showAlert={showAlert} /> </ProtectedRoute>} />
+          {/* Group Verification */}
           <Route exact path="/group-verify" element={<ProtectedRoute showAlert={showAlert}> <GroupVerify showAlert={showAlert} /> </ProtectedRoute>} />
+          {/* Crowd Counting */}
           <Route exact path="/crowd-count" element={<ProtectedRoute showAlert={showAlert}> <CrowdCount showAlert={showAlert} /> </ProtectedRoute>} />
         </Routes>
       </div>

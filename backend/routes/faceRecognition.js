@@ -113,40 +113,7 @@ router.post('/verify-face', fetchuser, async (req, res) => {
 
 
 
-// ROUTE 3: Delete a face label from profile: DELETE "/api/face/delete-labels/:label". Login required
-router.delete('/delete-labels/:label', fetchuser, async (req, res) => {
-    try {
-        const label = req.params.label;
-        const modelType = req.query['model-type'];
-        console.log('DELETE request received for label:', label, 'ModelType: ', modelType);
-
-        if (!label || !modelType) {
-            return res.status(400).json({ error: 'Label & ModelType parameters are required' });
-        }
-
-        if(modelType==='CNN') {
-            result = await FaceData.deleteOne({ user: req.user.id, label });
-        } else if (modelType==='PTM') {
-            result = await PTM_FaceData.deleteOne({ user: req.user.id, label });
-        } else {
-            return res.status(400).json({ error: 'Invalid Model Type'});
-        }
-        
-        console.log('Delete operation result:', result);
-
-        if (result.deletedCount === 0) {
-            return res.status(404).json({ error: 'Label not found or already deleted' });
-        }
-
-        res.json({ message: 'Label removed successfully' });
-    } catch (error) {
-        console.error('Error deleting label:', error.message);
-        res.status(500).json({ error: 'An internal server error occurred while deleting the label' });
-    }
-});
-
-
-// ROUTE 4: Register Face data using: POST "api/face/register-face-ptm". Login required
+// ROUTE 3: Register Face data using: POST "api/face/register-face-ptm". Login required
 router.post('/register-face-ptm', fetchuser, async (req, res) => {
     try {
         const { faceEncoding, label } = req.body;
@@ -186,6 +153,99 @@ router.post('/register-face-ptm', fetchuser, async (req, res) => {
     } catch (error) {
         console.error("Error in /register-face route: ", error);
         res.status(500).json({ success: false, message: "Server error occurred!" });
+    }
+});
+
+
+// ROUTE 4: Verify Face using: POST "api/face/authenticate". Login required
+router.post('/verify-face-ptm', fetchuser, async (req, res) => {
+    try {
+        const { embedding } = req.body; // Receiving embedding from frontend
+        console.log("Received embedding from Frontend");
+        // console.log("Received Embedding:", embedding);
+
+        if (!embedding || embedding.length === 0) {
+            return res.status(400).json({ error: "Embedding is required for authentication" });
+        }
+
+        // Step 1: Fetch all stored embeddings for the logged-in user
+        const storedPTMFaces = await PTM_FaceData.find({ user: req.user.id });
+
+        if (storedPTMFaces.length === 0) {
+            return res.status(404).json({ message: "No registered faces found for authentication" });
+        }
+
+        // Step 2: Compare the received embedding with stored embeddings
+        let bestMatch = null;
+        let minDistance = Infinity;
+
+        for (const face of storedPTMFaces) {
+            const storedEmbedding = face.faceEncoding;
+
+            if (embedding.length !== storedEmbedding.length) {
+                console.error(`Mismatched lengths: received=${embedding.length}, stored=${storedEmbedding.length}`);
+                continue; // Skip this face
+            }
+
+            // Calculate distance only if lengths match
+            const distance = Math.sqrt(
+                embedding.reduce((sum, value, idx) => sum + Math.pow(value - storedEmbedding[idx], 2), 0)
+            );
+            console.log(`Distance to ${face.label}: ${distance}`);
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                bestMatch = face;
+            }
+        }
+
+        // Step 3: Decide match threshold (adjust this based on testing)
+        const threshold = 0.6; // Set an appropriate threshold based on your model's performance
+        if (minDistance <= threshold && bestMatch) {
+            return res.status(200).json({
+                message: "Person identified successfully",
+                name: bestMatch.label,
+                details: bestMatch, // Include any other stored details
+            });
+        } else {
+            return res.status(200).json({ message: "No match found" });
+        }
+    } catch (error) {
+        console.error("Error during authentication:", error.message);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+
+// ROUTE 5: Delete a face label from profile: DELETE "/api/face/delete-labels/:label". Login required
+router.delete('/delete-labels/:label', fetchuser, async (req, res) => {
+    try {
+        const label = req.params.label;
+        const modelType = req.query['model-type'];
+        console.log('DELETE request received for label:', label, 'ModelType: ', modelType);
+
+        if (!label || !modelType) {
+            return res.status(400).json({ error: 'Label & ModelType parameters are required' });
+        }
+
+        if(modelType==='CNN') {
+            result = await FaceData.deleteOne({ user: req.user.id, label });
+        } else if (modelType==='PTM') {
+            result = await PTM_FaceData.deleteOne({ user: req.user.id, label });
+        } else {
+            return res.status(400).json({ error: 'Invalid Model Type'});
+        }
+        
+        console.log('Delete operation result:', result);
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ error: 'Label not found or already deleted' });
+        }
+
+        res.json({ message: 'Label removed successfully' });
+    } catch (error) {
+        console.error('Error deleting label:', error.message);
+        res.status(500).json({ error: 'An internal server error occurred while deleting the label' });
     }
 });
 

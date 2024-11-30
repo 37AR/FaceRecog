@@ -1,8 +1,30 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const ModelSelection = () => {
   const navigate = useNavigate();
+  const { context } = useParams(); // Dynamically get context (e.g., "registration", "verification", etc.)
+
+  // Determine labels and paths based on context
+  const contexts = {
+    registration: {
+      title: 'Select a Model for Face Registration',
+      cnnPath: '/solo-register',
+      preTrainedPath: '/solo-register-ptm',
+    },
+    verification: {
+      title: 'Select a Model for Face Verification',
+      cnnPath: '/solo-verify',
+      preTrainedPath: '/solo-verify-ptm',
+    },
+    group: {
+      title: 'Select a Model for Group Registration',
+      cnnPath: '/group-register',
+      preTrainedPath: '/group-register-ptm',
+    },
+  };
+
+  const { title, cnnPath, preTrainedPath } = contexts[context] || contexts.registration; // Default to registration
 
   const handleModelSelection = (path) => {
     navigate(path);
@@ -10,7 +32,7 @@ const ModelSelection = () => {
 
   return (
     <div style={{ textAlign: 'center', marginTop: '50px', fontFamily: 'Kumbh Sans' }}>
-      <h2>Select a Model to proceed...</h2>
+      <h2>{title}</h2>
       <button
         style={{
           padding: '10px 20px',
@@ -21,7 +43,7 @@ const ModelSelection = () => {
           borderRadius: '5px',
           cursor: 'pointer',
         }}
-        onClick={() => handleModelSelection('/solo-register-ptm')}
+        onClick={() => handleModelSelection(preTrainedPath)}
       >
         Pre-Trained Model
       </button>
@@ -35,7 +57,7 @@ const ModelSelection = () => {
           borderRadius: '5px',
           cursor: 'pointer',
         }}
-        onClick={() => handleModelSelection('/solo-register')}
+        onClick={() => handleModelSelection(cnnPath)}
       >
         CNN Model
       </button>

@@ -152,14 +152,14 @@ const UserProfile = () => {
                         </div>
                         <button
                             style={styles.addLabelButton}
-                            onClick={() => navigate('/model-selection')}
+                            onClick={() => navigate('/model-selection/registration')}
                         >
                             Add Label
                         </button>
                     </div>
                     {/* For CNN model Face Labels */}
                     <h4 style={styles.labelsHeader}>
-                        Registered Face Labels [CNN]
+                        Registered Labels [CNN]
                         <button
                             style={styles.arrowButton}
                             onClick={() => setShowLabels(!showLabels)}
@@ -193,7 +193,7 @@ const UserProfile = () => {
 
                     {/* For Pre-Trained mOdel Face Labels */}
                     <h4 style={styles.labelsHeader}>
-                        Registered Face Labels [PTM]
+                        Registered Labels [PTM]
                         <button
                             style={styles.arrowButton}
                             onClick={() => setShowPLabels(!showPLabels)}

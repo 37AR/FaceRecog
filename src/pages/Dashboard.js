@@ -23,10 +23,10 @@ const Dashboard = (props) => {
   };
 
   const handleSoloRegister = () => {
-    navigate('/model-selection');
+    navigate('/model-selection/registration');
   };
   const handleSoloVerify = () => {
-    navigate('/solo-verify');
+    navigate('/model-selection/verification');
   }
   const handleGroupVerify = () => {
     navigate('/group-verify');
