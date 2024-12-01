@@ -165,7 +165,7 @@ const SoloVerify = () => {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.header}>Verify Face</h1>
+      <h1 style={styles.header}>Face Verification [CNN]</h1>
 
       {/* Card container */}
       <div style={styles.card}>

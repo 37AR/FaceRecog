@@ -4,6 +4,7 @@ const styles = {
       padding: "20px",
       maxWidth: "600px",
       margin: "0 auto",
+      marginTop: '50px',
       display: "flex",
       flexDirection: "column",
       alignItems: "center",

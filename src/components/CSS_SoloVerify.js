@@ -4,6 +4,7 @@ const styles = {
       padding: '20px',
       maxWidth: '600px',
       margin: '0 auto',
+      marginTop: '50px',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -70,10 +71,20 @@ const styles = {
     },
     resultMessage: {
       marginTop: '20px',
-      fontSize: '16px',
+      fontSize: '35px',
       fontWeight: '500',
       color: '#333',
       textAlign: 'center',
+    },
+    resultList: {
+      listStyle: 'none',
+      padding: '0',
+      marginTop: '10px',
+      fontSize: '18px',
+    },
+    resultItem: {
+      marginBottom: '5px',
+      color: '#2c3e50',
     },
   };
 

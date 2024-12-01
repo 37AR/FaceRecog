@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Card } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import bg_image from '../images/facerecs_copy.jpg'
 
 const Signup = (props) => {
     const [credentials, setCredentials] = useState({ name: "", email: "", password: "", cpassword: "" });
-    const [showPassword, setShowPassword] = useState(false); //default: hide password
+    const [showPassword, setShowPassword] = useState(false); // Default: hide password
     let navigate = useNavigate();
 
     useEffect(() => {
@@ -15,10 +15,6 @@ const Signup = (props) => {
             navigate('/dashboard');
         }
     }, [navigate, props]);
-
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword); //toggle state
-    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -33,9 +29,8 @@ const Signup = (props) => {
         const json = await response.json();
         console.log(json);
         if (json.success) {
-            // Save the authToken & redirect
             sessionStorage.setItem('token', json.authToken);
-            navigate("/");
+            navigate("/dashboard");
             props.showAlert("Account created Successfully", "success");
         } else {
             props.showAlert("Invalid details", "danger");
@@ -46,54 +41,92 @@ const Signup = (props) => {
         setCredentials({ ...credentials, [e.target.name]: e.target.value });
     };
 
+    const isFormValid = credentials.name && credentials.email && credentials.password && credentials.cpassword && (credentials.password === credentials.cpassword);
+
     return (
         <div style={styles.container}>
-            <div className='container d-flex justify-content-center align-items-center' style={styles.innerContainer}>
-                <div style={styles.formContainer}>
-                    <h2 className='my-3 text-center' style={styles.title}>FaceRecs</h2>
+            <div className="container mt-1 d-flex justify-content-center" style={{ minHeight: '79vh' }}>
+                <div style={{ width: "100%", maxWidth: "400px" }}>
+
                     <Card className="p-5 shadow-lg" style={styles.card}>
+                        <div className="my-3 text-center" style={styles.title}>FaceRecs</div>
                         <form onSubmit={handleSubmit} style={{ fontSize: '1.1rem' }}>
-                            <div className="my-3">
-                                <label htmlFor="name" className="form-label">Name</label>
-                                <input style={styles.inputForm} type="text" className="form-control" id="name" name='name' onChange={onChange} aria-describedby="nameHelp" />
-                            </div>
                             <div className="mb-3">
-                                <label htmlFor="email" className="form-label">Email address</label>
-                                <input style={styles.inputForm} type="email" className="form-control" id="email" name='email' onChange={onChange} aria-describedby="emailHelp" />
-                                <div style={{ fontSize: '0.85rem' }} id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
-                            </div>
-                            <div className="mb-3 position-relative">
-                                <label htmlFor="password" className="form-label">Password</label>
                                 <input
                                     style={styles.inputForm}
-                                    type={showPassword ? 'text' : "password"}
-                                    className="form-control"
-                                    value={credentials.password}
+                                    type="text"
+                                    className="form-control custom-input"
+                                    value={credentials.name}
                                     onChange={onChange}
-                                    name="password"
-                                    id="password"
+                                    id="name"
+                                    name="name"
+                                    placeholder="Name"
+                                    required
                                 />
-                                {/* Eye icon for showing/hiding password */}
-                                <span
-                                    onClick={togglePasswordVisibility}
-                                    style={styles.eyeIcon}
-                                    role="button"
-                                    aria-label={showPassword ? "Hide Password" : "Show Password"}>
-                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                </span>
                             </div>
                             <div className="mb-3">
-                                <label htmlFor="cpassword" className="form-label">Confirm Password</label>
-                                <input style={styles.inputForm} type="password" className="form-control" id="cpassword" name='cpassword' onChange={onChange} minLength={5} required />
+                                <input
+                                    style={styles.inputForm}
+                                    type="email"
+                                    className="form-control custom-input"
+                                    value={credentials.email}
+                                    onChange={onChange}
+                                    id="email"
+                                    name="email"
+                                    placeholder="Email"
+                                    required
+                                />
+                                <div style={{ fontSize: '0.85rem', fontWeight: 'lighter', color: 'whitesmoke' }} id="emailHelp" className="form-text">
+                                    We'll never share your email with anyone else.
+                                </div>
                             </div>
-                            <button type="submit" className="btn btn-primary w-100" style={styles.button}>Signup</button>
+                            <div className="mb-3 position-relative">
+                                <div className="input-group">
+                                    <input
+                                        style={styles.inputForm}
+                                        type={showPassword ? "text" : "password"}
+                                        className="form-control custom-input"
+                                        value={credentials.password}
+                                        onChange={onChange}
+                                        name="password"
+                                        id="password"
+                                        placeholder="Password"
+                                        required
+                                    />
+                                    <span
+                                        style={styles.passwordToggle}
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? '🐵' : '🙈'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="mb-3">
+                                <input
+                                    style={styles.inputForm}
+                                    type="password"
+                                    className="form-control custom-input"
+                                    value={credentials.cpassword}
+                                    onChange={onChange}
+                                    name="cpassword"
+                                    id="cpassword"
+                                    placeholder="Confirm Password"
+                                    required
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                className="btn btn-primary"
+                                style={{ ...styles.button, backgroundColor: isFormValid ? '#007bff' : '#099acb' }}
+                                disabled={!isFormValid}
+                            >
+                                Signup
+                            </button>
                         </form>
                     </Card>
-
-                    {/* Already have an account link */}
                     <div className="text-center mt-3">
-                        <p>Have an Account?
-                            <Link to='/login'>Login</Link>
+                        <p>Already have an account?{' '}
+                            <Link to="/login">Login</Link>
                         </p>
                     </div>
                 </div>
@@ -104,51 +137,43 @@ const Signup = (props) => {
 
 const styles = {
     container: {
-        fontFamily: 'Kumbh Sans',
-        display: 'flex',
-        justifyContent: 'center', // horizontally center
-        alignItems: 'center', // vertically center
-        height: '100vh', // 100vh
-        margin: 0,
-        padding: 0,
-        marginTop: '0px'
-    },
-    innerContainer: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: '80vh',
-    },
-    formContainer: {
-        width: '100%',
-        maxWidth: '400px', // Set max width to ensure the form is responsive
+        height: '100%',
+        fontFamily: 'Kumbh Sans',
+        // margin: 0,
+        // padding: 0,
+        // marginTop: '60px',
+        position: 'relative',
+        top: '65px',
     },
     title: {
-        color: 'teal',
-        fontSize: '65px',
+        color: 'whitesmoke', //'teal'
+        fontSize: '36px',
         fontFamily: 'Bruno Ace SC',
-        borderBottom: "4px solid teal",
-        paddingBottom: '5px', //for border-bottom effect
+        borderBottom: "4px solid lightblue",
+        paddingBottom: '5px',
     },
     card: {
+        fontWeight: 'bold',
         transform: 'scale(1.03)',
         maxWidth: '100%',
-        minHeight: '400px',
+        minHeight: '250px',
         padding: '25px',
-        borderRadius: '50px',
-        boxShadow: '0 4px 10px rgba(0,0,0,0.1)',  // softened shadow
-        transition: 'transform 0.3s ease-in-out',  // smooth transition for scaling
-        cursor: 'pointer',
+        borderRadius: '25px',
+        boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+        transition: 'transform 0.3s ease-in-out',
+        backgroundImage: `url(${bg_image})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
     },
     inputForm: {
+        fontWeight: 'thick',
         borderRadius: '20px',
-    },
-    eyeIcon: {
-        position: 'absolute',
-        right: '12px',
-        top: '40px',
-        cursor: 'pointer',
-        fontSize: '1.05rem',
+        padding: '12px 15px',
+        fontSize: '16px',
+        marginTop: '5px'
     },
     button: {
         fontWeight: 'bold',
@@ -159,19 +184,18 @@ const styles = {
         borderRadius: '20px',
         cursor: 'pointer',
         textAlign: 'center',
-        backgroundColor: '#007bff',
-        transition: 'background-color 0.3s ease-in-out',
+    },
+    passwordToggle: {
+        position: 'absolute',
+        right: '15px',
+        top: '55%',
+        transform: 'translateY(-50%)',
+        cursor: 'pointer',
+        fontSize: '18px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 };
-
-
-// Hover effect for the card
-// styles.card:hover = {
-//     transform: 'scale(1.05)',  // increases size on hover
-// };
-
-// styles.button:hover = {
-//     backgroundColor: '#0056b3',  // darker blue when button is hovered
-// };
 
 export default Signup;

@@ -212,7 +212,7 @@ const Ptm_SoloRegister = (props) => {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.header}>Individual Face Registration</h1>
+      <h1 style={styles.header}>Individual Face Registration [PTM]</h1>
   
       {/* Card container */}
       <div style={styles.card}>

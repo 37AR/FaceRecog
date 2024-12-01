@@ -186,7 +186,7 @@ const UserProfile = () => {
                                     </li>
                                 ))
                             ) : (
-                                <p style={styles.noLabels}>No labels registered yet.</p>
+                                <p style={styles.noLabels}>Using CNN, No labels registered yet.</p>
                             )}
                         </ul>
                     )}
@@ -219,7 +219,7 @@ const UserProfile = () => {
                                     </li>
                                 ))
                             ) : (
-                                <p style={styles.noLabels}>No PTM labels registered yet.</p>
+                                <p style={styles.noLabels}>Using PTM, No labels registered yet.</p>
                             )}
                         </ul>
                     )}
