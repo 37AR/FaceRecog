@@ -165,6 +165,19 @@ const styles = {
         textAlign: 'center',
         color: '#555',
     },
+    viewHistoryButton: {
+        backgroundColor: 'teal',
+        color: 'white',
+        padding: '10px 20px',
+        border: 'none',
+        borderRadius: '100px',
+        cursor: 'pointer',
+        fontSize: '18px',
+        marginTop: '20px',
+    },
+    viewHistoryButtonHover: {
+        backgroundColor: '#3aa3a3',
+    }
 };
 
 export default styles;

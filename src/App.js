@@ -17,6 +17,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import UserProfile from './components/UserProfile';
 import ModelSelection from './components/ModelSelection';
 import PtmSoloVerify from './components/Ptm_SoloVerify';
+import History from './components/History';
 
 
 function App() {
@@ -50,10 +51,14 @@ function App() {
           <Route exact path="/signup" element={<Signup showAlert={showAlert} />} />
           {/* Dashboard */}
           <Route exact path="/dashboard" element={<ProtectedRoute showAlert={showAlert}> <Dashboard showAlert={showAlert} /> </ProtectedRoute>} />
+
           {/* User Profile */}
           <Route exact path="/profile" element={<ProtectedRoute showAlert={showAlert}> <UserProfile showAlert={showAlert} /> </ProtectedRoute>} />
+          {/* HISTORY */}
+          <Route exact path="/history" element={<ProtectedRoute showAlert={showAlert}> <History showAlert={showAlert} /> </ProtectedRoute>} />
           {/* Model Selection */}
           <Route path="/model-selection/:context" element={<ProtectedRoute showAlert={showAlert}><ModelSelection showAlert={showAlert} /> </ProtectedRoute>} />
+          
           {/* CNN Solo Registration */}
           <Route exact path="/solo-register" element={<ProtectedRoute showAlert={showAlert}><SoloRegister showAlert={showAlert} /> </ProtectedRoute>} />
           {/* PTM Solo Registration */}

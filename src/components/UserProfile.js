@@ -13,6 +13,7 @@ const UserProfile = () => {
     const [showEditIcon, setShowEditIcon] = useState(false);
     const [showLabels, setShowLabels] = useState(false); // State to toggle labels visibility
     const [showPLabels, setShowPLabels] = useState(false);
+    const [hovered, setHovered] = useState(false);
 
     const navigate = useNavigate();
 
@@ -191,7 +192,7 @@ const UserProfile = () => {
                         </ul>
                     )}
 
-                    {/* For Pre-Trained mOdel Face Labels */}
+                    {/* For Pre-Trained Model Face Labels */}
                     <h4 style={styles.labelsHeader}>
                         Registered Labels [PTM]
                         <button
@@ -223,6 +224,16 @@ const UserProfile = () => {
                             )}
                         </ul>
                     )}
+
+                    {/* View History Button */}
+                    <button
+                        style={hovered ? { ...styles.viewHistoryButton, ...styles.viewHistoryButtonHover } : styles.viewHistoryButton}
+                        onClick={() => navigate('/history')}
+                        onMouseEnter={() => setHovered(true)}
+                        onMouseLeave={() => setHovered(false)}
+                    >
+                        View History
+                    </button>
                 </div>
             ) : (
                 <p style={styles.noData}>No user data available.</p>
